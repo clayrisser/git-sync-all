@@ -1,0 +1,25 @@
+{
+  "extends": ["jam/typescript"],
+  "overrides": [
+    {
+      "files": ["*.spec.ts", "*.spec.tsx"],
+      "env": {
+        "jest": true
+      },
+      "plugins": ["jest"]
+    }
+  ],
+  "rules": {
+    "import/export": "off",
+    "import/named": "off",
+    "import/no-unresolved": "off",
+    "no-unused-vars": "off",
+    "react/forbid-foreign-prop-types": "off",
+    "react/jsx-wrap-multilines": "off",
+    "react/no-unescaped-entities": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_" }
+    ]
+  }
+}
