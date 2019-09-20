@@ -24,6 +24,10 @@ yarn global add git-sync-all
 
 Submit an [issue](https://github.com/codejamninja/git-sync-all/issues/new)
 
+## System Requirements
+
+[Node.js](https://nodejs.org)
+
 ## Support
 
 Submit an [issue](https://github.com/codejamninja/git-sync-all/issues/new)
