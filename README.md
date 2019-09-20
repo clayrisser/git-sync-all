@@ -7,23 +7,26 @@
 
 ## Features
 
-- bitbucket
-- github
-- gitlab
+- BitBucket
+- GitHub
+- GitLab
 
 ## Installation
 
 ```sh
+# npm
 npm install -g git-sync-all
+# yarn
+yarn global add git-sync-all
 ```
-
-## Dependencies
-
-- [NodeJS](https://nodejs.org)
 
 ## Usage
 
 Submit an [issue](https://github.com/codejamninja/git-sync-all/issues/new)
+
+## System Requirements
+
+[Node.js](https://nodejs.org)
 
 ## Support
 
