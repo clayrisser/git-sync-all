@@ -1,7 +1,11 @@
 import { Repo } from '../types';
 
+export interface GetReposConfig {
+  owned: boolean;
+}
+
 export default interface Server {
-  getRepos(): Promise<Repo[]>;
+  getRepos(config?: GetReposConfig): Promise<Repo[]>;
 
   createRepo(name: string): Promise<Repo | null>;
 

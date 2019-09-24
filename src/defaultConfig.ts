@@ -5,7 +5,8 @@ export default {
     blacklist: new Set(),
     clientId: '',
     clientSecret: '',
-    groups: [],
+    groups: new Set(),
+    owned: true,
     server: 'gitlab',
     token: '',
     whitelist: new Set()

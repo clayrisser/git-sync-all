@@ -11,6 +11,7 @@ export default class Command extends EcosystemCommand {
     'source-client-id': flags.string(),
     'source-client-secret': flags.string(),
     'source-groups': flags.string(),
+    'source-owned': flags.boolean(),
     'source-server': flags.string(),
     'source-slug-regex': flags.string(),
     'source-token': flags.string(),
@@ -28,6 +29,7 @@ export default class Command extends EcosystemCommand {
     return {
       runtimeConfig: {
         source: {
+          owned: flags['source-owned'] || config.source.owned,
           clientId: flags['source-client-id'] || config.source.clientId,
           clientSecret:
             flags['source-client-secret'] || config.source.clientSecret,
@@ -39,12 +41,17 @@ export default class Command extends EcosystemCommand {
               ? flags['source-blacklist'].split(',')
               : config.source.blacklist)
           ]),
-          groups: flags['source-groups']
-            ? flags['source-groups'].split(',')
-            : config.source.groups,
-          slugRegex: flags['source-slug-regex']
-            ? newRegExp(flags['source-slug-regex'])
-            : config.source.slugRegex,
+          groups: new Set([
+            ...config.source.groups,
+            ...(flags['source-groups']
+              ? flags['source-groups'].split(',')
+              : config.source.groups)
+          ]),
+          slugRegex: newRegExp(
+            flags['source-slug-regex']
+              ? flags['source-slug-regex']
+              : config.source.slugRegex
+          ),
           whitelist: new Set([
             ...config.source.whitelist,
             ...(flags['source-whitelist']

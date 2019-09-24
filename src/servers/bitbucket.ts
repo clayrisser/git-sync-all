@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import qs from 'qs';
-import Server, { ServerConfig } from './server';
+import Server, { ServerConfig, GetReposConfig } from './server';
 import { Repo } from '../types';
 
 export interface Detail {
@@ -36,10 +36,14 @@ export default class BitBucket implements Server {
     return this._token;
   }
 
-  async getRepos(): Promise<Repo[]> {
+  async getRepos(config?: GetReposConfig): Promise<Repo[]> {
+    config = {
+      owned: true,
+      ...(config || {})
+    };
     const details = (await this.instance.get('/repositories', {
       params: {
-        role: 'owner'
+        ...(config.owned ? { role: 'owner' } : {})
       },
       headers: { Authorization: `Bearer ${await this.getToken()}` }
     })).data.values as Detail[];
