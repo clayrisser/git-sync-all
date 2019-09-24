@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import qs from 'qs';
-import Server, { ServerConfig, GetReposConfig } from './server';
+import Server, { ServerConfig, GetReposConfig, GetRepoConfig } from './server';
 import { Repo } from '../types';
 
 export interface Detail {
@@ -60,9 +60,14 @@ export default class BitBucket implements Server {
     });
   }
 
-  async getRepo(name: string): Promise<Repo | null> {
+  async getRepo(config?: GetRepoConfig): Promise<Repo | null> {
+    config = {
+      slug: '',
+      group: '',
+      ...(config || {})
+    };
     const detail = (await this.instance.get(
-      `/projects/${encodeURIComponent(name)}`
+      `/projects/${encodeURIComponent(`${config.group}/${config.slug}`)}`
     )).data as Detail;
     const [group, slug] = detail.full_name.split('/');
     return {

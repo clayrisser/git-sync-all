@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios';
-import Server, { ServerConfig, GetReposConfig } from './server';
+import Server, { ServerConfig, GetReposConfig, GetRepoConfig } from './server';
 import { Repo } from '../types';
 
 export interface Detail {
@@ -43,9 +43,14 @@ export default class GitLab implements Server {
     });
   }
 
-  async getRepo(name: string): Promise<Repo | null> {
+  async getRepo(config?: GetRepoConfig): Promise<Repo | null> {
+    config = {
+      slug: '',
+      group: '',
+      ...(config || {})
+    };
     const detail = (await this.instance.get(
-      `/projects/${encodeURIComponent(name)}`
+      `/projects/${encodeURIComponent(config.slug)}`
     )).data as Detail;
     const [group, slug] = detail.path_with_namespace.split('/');
     return {

@@ -1,5 +1,6 @@
 import Err from 'err';
 import { Logger } from '@ecosystem/core';
+import { mapSeries } from 'bluebird';
 import createServer from '../servers';
 import { Config, Repo } from '../types';
 
@@ -15,17 +16,41 @@ export default async function sync(config: Config, logger: Logger) {
   if (!sourceServer) {
     throw new Err(`server '${config.source.server}' not supported`, 400);
   }
+  const targetServer = createServer(config.target.server, {
+    clientId: config.target.clientId,
+    clientSecret: config.target.clientSecret,
+    token: config.target.token
+  });
+  if (!targetServer) {
+    throw new Err(`server '${config.target.server}' not supported`, 400);
+  }
   const sourceRepos = (await sourceServer.getRepos({
     owned: config.source.owned
   })).filter((repo: Repo) => {
     const { blacklist, whitelist, slugRegex, groups } = config.source;
+    const repoPath = `${repo.group}/${repo.slug}`;
     return (
       (!groups.size || groups.has(repo.group)) &&
-      (((slugRegex ? slugRegex.test(repo.slug) : true) &&
-        !blacklist.has(repo.slug)) ||
-        whitelist.has(repo.slug))
+      (((slugRegex
+        ? slugRegex.test(repo.slug) || slugRegex.test(repoPath)
+        : true) &&
+        (!blacklist.has(repo.slug) && !blacklist.has(repoPath))) ||
+        (whitelist.has(repo.slug) || whitelist.has(repoPath)))
     );
   });
+
+  await mapSeries(sourceRepos, async (sourceRepo: Repo) => {
+    if (
+      !(await targetServer.getRepo({
+        slug: sourceRepo.slug,
+        group: sourceRepo.group
+      }))
+    ) {
+      return sourceRepo;
+    }
+    return sourceRepo;
+  });
+
   let sourceRemotes = [];
   if (config.ssh) {
     sourceRemotes = sourceRepos.map((r: Repo) => r.sshRemote);
