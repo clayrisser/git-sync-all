@@ -47,17 +47,14 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.6.0",
+    "@ecosystem/config": "^0.5.10",
+    "@ecosystem/core": "^0.5.14",
     "@oclif/command": "^1.5.19",
-    "@oclif/config": "^1.13.3",
     "@oclif/errors": "^1.2.2",
-    "@oclif/plugin-help": "^2.2.1",
     "core-js": "^3.2.1",
-    "cosmiconfig": "^5.2.1",
     "err": "^2.1.11",
     "gitlab": "^11.1.2",
     "lodash": "^4.17.15",
-    "oclif": "^1.13.6",
-    "pkg-dir": "^4.2.0",
     "ts-optchain.macro": "^1.1.5"
   },
   "devDependencies": {

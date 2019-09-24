@@ -1,9 +1,19 @@
 import { handle as handleError } from '@oclif/errors/lib/handle';
-import GitSyncAll from '.';
+import Ecosystem from '@ecosystem/core';
+import Command from './command';
+import defaultConfig from './defaultConfig';
+import actions from './actions';
+import { Config, Actions } from './types';
 
 (async () => {
   try {
-    await GitSyncAll.run();
+    const ecosystem = new Ecosystem<Config, Actions>(
+      'gitsyncall',
+      defaultConfig,
+      actions,
+      Command
+    );
+    await ecosystem.run();
   } catch (err) {
     handleError(err);
   }

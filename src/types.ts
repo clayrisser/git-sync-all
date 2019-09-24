@@ -1,6 +1,8 @@
-export interface UserConfig {
-  ssh: boolean;
-}
+import {
+  Action as EcosystemAction,
+  Actions as EcosystemActions,
+  Config as EcosystemConfig
+} from '@ecosystem/core';
 
 export interface Repo {
   detail: object;
@@ -9,13 +11,12 @@ export interface Repo {
   sshRemote: string;
 }
 
-export interface Config extends UserConfig {
+export interface Config extends EcosystemConfig {
   server: string;
+  ssh: boolean;
   token: string;
 }
 
-export type Action = (config: Config) => any;
+export type Action = EcosystemAction<Config>;
 
-export interface Actions {
-  [key: string]: Action;
-}
+export type Actions = EcosystemActions<Config>;
