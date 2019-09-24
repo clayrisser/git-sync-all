@@ -1,24 +1,65 @@
-import { flags } from '@oclif/command';
+import newRegExp from 'newregexp';
 import { Command as EcosystemCommand } from '@ecosystem/core';
+import { flags } from '@oclif/command';
+import { Config } from './types';
 
 export default class Command extends EcosystemCommand {
   static description = 'keep all git repos in sync';
 
   static flags = {
-    'client-id': flags.string(),
-    'client-secret': flags.string(),
-    server: flags.string({ char: 's', required: false }),
-    token: flags.string({ char: 't' })
+    'source-blacklist': flags.string(),
+    'source-client-id': flags.string(),
+    'source-client-secret': flags.string(),
+    'source-groups': flags.string(),
+    'source-server': flags.string(),
+    'source-slug-regex': flags.string(),
+    'source-token': flags.string(),
+    'source-whitelist': flags.string(),
+    'target-client-id': flags.string(),
+    'target-client-secret': flags.string(),
+    'target-group': flags.string(),
+    'target-server': flags.string(),
+    'target-token': flags.string()
   };
 
   async run() {
     const { flags } = this.parse(Command.EcosystemCommand);
+    const config = await Command.EcosystemCommand.ecosystem.getConfig<Config>();
     return {
       runtimeConfig: {
-        clientId: flags['client-id'] || '',
-        clientSecret: flags['client-secret'] || '',
-        server: flags.server || 'gitlab',
-        token: flags.token || ''
+        source: {
+          clientId: flags['source-client-id'] || config.source.clientId,
+          clientSecret:
+            flags['source-client-secret'] || config.source.clientSecret,
+          server: flags['source-server'] || config.source.server,
+          token: flags['source-token'] || config.source.token,
+          blacklist: new Set([
+            ...config.source.blacklist,
+            ...(flags['source-blacklist']
+              ? flags['source-blacklist'].split(',')
+              : config.source.blacklist)
+          ]),
+          groups: flags['source-groups']
+            ? flags['source-groups'].split(',')
+            : config.source.groups,
+          slugRegex: flags['source-slug-regex']
+            ? newRegExp(flags['source-slug-regex'])
+            : config.source.slugRegex,
+          whitelist: new Set([
+            ...config.source.whitelist,
+            ...(flags['source-whitelist']
+              ? flags['source-whitelist'].split(',')
+              : config.source.whitelist)
+          ])
+        },
+        target: {
+          clientId: flags['target-client-id'] || config.target.clientId,
+          clientSecret:
+            flags['target-client-secret'] || config.target.clientSecret,
+          group: flags['target-group'] || config.target.group,
+          server: flags['target-server'] || config.target.server,
+          token: flags['target-token'] || config.target.token
+        }
       }
     };
   }

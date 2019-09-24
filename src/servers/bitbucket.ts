@@ -44,11 +44,13 @@ export default class BitBucket implements Server {
       headers: { Authorization: `Bearer ${await this.getToken()}` }
     })).data.values as Detail[];
     return details.map(detail => {
+      const [group, slug] = detail.full_name.split('/');
       return {
         detail,
+        group,
         httpRemote: `https://bitbucket.org/${detail.full_name}.git`,
         name: detail.name,
-        path: detail.full_name,
+        slug,
         sshRemote: `git@bitbucket.org/${detail.full_name}.git`
       };
     });
@@ -58,11 +60,13 @@ export default class BitBucket implements Server {
     const detail = (await this.instance.get(
       `/projects/${encodeURIComponent(name)}`
     )).data as Detail;
+    const [group, slug] = detail.full_name.split('/');
     return {
       detail,
+      group,
       httpRemote: `https://bitbucket.org/${detail.full_name}.git`,
       name: detail.name,
-      path: detail.full_name,
+      slug,
       sshRemote: `git@bitbucket.org/${detail.full_name}.git`
     };
   }
@@ -70,11 +74,13 @@ export default class BitBucket implements Server {
   async createRepo(name: string): Promise<Repo | null> {
     const detail = (await this.instance.post('/projects', { name }))
       .data as Detail;
+    const [group, slug] = detail.full_name.split('/');
     return {
       detail,
+      group,
       httpRemote: `https://bitbucket.org/${detail.full_name}.git`,
       name: detail.name,
-      path: detail.full_name,
+      slug,
       sshRemote: `git@bitbucket.org/${detail.full_name}.git`
     };
   }

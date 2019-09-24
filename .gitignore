@@ -79,3 +79,4 @@ yarn.lock
 tsconfig.tsbuildinfo
 .tmp
 lib
+.gitsyncallrc

@@ -1,3 +1,18 @@
+import { SourceConfig, TargetConfig } from './types';
+
 export default {
-  ssh: true
+  source: {
+    blacklist: new Set(),
+    clientId: '',
+    clientSecret: '',
+    groups: [],
+    server: 'gitlab',
+    token: '',
+    whitelist: new Set()
+  } as SourceConfig,
+  ssh: true,
+  target: {
+    group: '',
+    server: 'bitbucket'
+  } as TargetConfig
 };

@@ -27,11 +27,13 @@ export default class GitLab implements Server {
       params: { owned: true }
     })).data as Detail[];
     return details.map(detail => {
+      const [group, slug] = detail.path_with_namespace.split('/');
       return {
         detail,
+        group,
         httpRemote: detail.http_url_to_repo,
         name: detail.name,
-        path: detail.path_with_namespace,
+        slug,
         sshRemote: detail.ssh_url_to_repo
       };
     });
@@ -41,11 +43,13 @@ export default class GitLab implements Server {
     const detail = (await this.instance.get(
       `/projects/${encodeURIComponent(name)}`
     )).data as Detail;
+    const [group, slug] = detail.path_with_namespace.split('/');
     return {
       detail,
+      group,
       httpRemote: detail.http_url_to_repo,
       name: detail.name,
-      path: detail.path_with_namespace,
+      slug,
       sshRemote: detail.ssh_url_to_repo
     };
   }
@@ -53,11 +57,13 @@ export default class GitLab implements Server {
   async createRepo(name: string): Promise<Repo | null> {
     const detail = (await this.instance.post('/projects', { name }))
       .data as Detail;
+    const [group, slug] = detail.path_with_namespace.split('/');
     return {
       detail,
+      group,
       httpRemote: detail.http_url_to_repo,
       name: detail.name,
-      path: detail.path_with_namespace,
+      slug,
       sshRemote: detail.ssh_url_to_repo
     };
   }
