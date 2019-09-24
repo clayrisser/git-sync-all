@@ -9,5 +9,7 @@ export default interface Server {
 }
 
 export interface ServerConfig {
+  clientId: string;
+  clientSecret: string;
   token: string;
 }

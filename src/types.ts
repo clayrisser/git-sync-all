@@ -3,6 +3,7 @@ import {
   Actions as EcosystemActions,
   Config as EcosystemConfig
 } from '@ecosystem/core';
+import { ServerConfig } from './servers';
 
 export interface Repo {
   detail: object;
@@ -12,10 +13,9 @@ export interface Repo {
   sshRemote: string;
 }
 
-export interface Config extends EcosystemConfig {
+export interface Config extends ServerConfig, EcosystemConfig {
   server: string;
   ssh: boolean;
-  token: string;
 }
 
 export type Action = EcosystemAction<Config>;

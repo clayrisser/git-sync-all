@@ -23,8 +23,9 @@ export default class GitLab implements Server {
   }
 
   async getRepos(): Promise<Repo[]> {
-    const details = (await this.instance.get('/projects?owned=true'))
-      .data as Detail[];
+    const details = (await this.instance.get('/projects', {
+      params: { owned: true }
+    })).data as Detail[];
     return details.map(detail => {
       return {
         detail,

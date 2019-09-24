@@ -5,6 +5,8 @@ export default class Command extends EcosystemCommand {
   static description = 'keep all git repos in sync';
 
   static flags = {
+    'client-id': flags.string(),
+    'client-secret': flags.string(),
     server: flags.string({ char: 's', required: false }),
     token: flags.string({ char: 't' })
   };
@@ -13,6 +15,8 @@ export default class Command extends EcosystemCommand {
     const { flags } = this.parse(Command.EcosystemCommand);
     return {
       runtimeConfig: {
+        clientId: flags['client-id'] || '',
+        clientSecret: flags['client-secret'] || '',
         server: flags.server || 'gitlab',
         token: flags.token || ''
       }
