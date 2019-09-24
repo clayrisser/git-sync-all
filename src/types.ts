@@ -8,6 +8,7 @@ export interface Repo {
   detail: object;
   httpRemote: string;
   name: string;
+  path: string;
   sshRemote: string;
 }
 

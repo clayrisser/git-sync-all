@@ -51,9 +51,9 @@
     "@ecosystem/core": "^0.5.14",
     "@oclif/command": "^1.5.19",
     "@oclif/errors": "^1.2.2",
+    "axios": "^0.19.0",
     "core-js": "^3.2.1",
     "err": "^2.1.11",
-    "gitlab": "^11.1.2",
     "lodash": "^4.17.15",
     "ts-optchain.macro": "^1.1.5"
   },
