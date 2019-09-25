@@ -1,5 +1,11 @@
 import axios, { AxiosInstance } from 'axios';
-import Server, { ServerConfig, GetReposConfig, GetRepoConfig } from './server';
+import { oc } from 'ts-optchain.macro';
+import Server, {
+  ServerConfig,
+  GetReposConfig,
+  GetRepoConfig,
+  CreateRepoConfig
+} from './server';
 import { Repo } from '../types';
 
 export interface Detail {
@@ -23,12 +29,12 @@ export default class GitLab implements Server {
   }
 
   async getRepos(config?: GetReposConfig): Promise<Repo[]> {
-    const { owned } = {
+    config = {
       owned: true,
       ...(config || {})
     };
     const details = (await this.instance.get('/projects', {
-      params: { owned }
+      params: { owned: config.owned }
     })).data as Detail[];
     return details.map(detail => {
       const [group, slug] = detail.path_with_namespace.split('/');
@@ -49,9 +55,15 @@ export default class GitLab implements Server {
       group: '',
       ...(config || {})
     };
-    const detail = (await this.instance.get(
-      `/projects/${encodeURIComponent(config.slug)}`
-    )).data as Detail;
+    const detail = oc(
+      await this.instance
+        .get(`/projects/${encodeURIComponent(config.slug)}`)
+        .catch(err => {
+          if (err.response.status === 404) return null;
+          throw err;
+        })
+    ).data(null) as Detail;
+    if (!detail) return null;
     const [group, slug] = detail.path_with_namespace.split('/');
     return {
       detail,
@@ -63,9 +75,21 @@ export default class GitLab implements Server {
     };
   }
 
-  async createRepo(name: string): Promise<Repo | null> {
-    const detail = (await this.instance.post('/projects', { name }))
-      .data as Detail;
+  async createRepo(config?: CreateRepoConfig): Promise<Repo | null> {
+    config = {
+      group: '',
+      project: 'PROJ',
+      slug: '',
+      ...(config || {})
+    };
+    const detail = (await this.instance
+      .post('/projects', {
+        name: config.slug
+      })
+      .catch(err => {
+        console.log(err);
+        throw err;
+      })).data as Detail;
     const [group, slug] = detail.path_with_namespace.split('/');
     return {
       detail,

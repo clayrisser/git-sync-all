@@ -1,6 +1,7 @@
 import { SourceConfig, TargetConfig } from './types';
 
 export default {
+  ssh: true,
   source: {
     blacklist: new Set(),
     clientId: '',
@@ -11,9 +12,9 @@ export default {
     token: '',
     whitelist: new Set()
   } as SourceConfig,
-  ssh: true,
   target: {
     group: '',
+    project: '',
     server: 'bitbucket'
   } as TargetConfig
 };

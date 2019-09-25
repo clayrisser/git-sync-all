@@ -38,19 +38,18 @@ export default async function sync(config: Config, logger: Logger) {
         (whitelist.has(repo.slug) || whitelist.has(repoPath)))
     );
   });
-
   await mapSeries(sourceRepos, async (sourceRepo: Repo) => {
-    if (
-      !(await targetServer.getRepo({
-        slug: sourceRepo.slug,
-        group: sourceRepo.group
-      }))
-    ) {
-      return sourceRepo;
+    const { slug } = sourceRepo;
+    const group = config.target.group || sourceRepo.group;
+    if (!(await targetServer.getRepo({ slug, group }))) {
+      return targetServer.createRepo({
+        group,
+        project: config.target.project,
+        slug
+      });
     }
     return sourceRepo;
   });
-
   let sourceRemotes = [];
   if (config.ssh) {
     sourceRemotes = sourceRepos.map((r: Repo) => r.sshRemote);

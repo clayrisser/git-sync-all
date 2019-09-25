@@ -1,6 +1,12 @@
 import axios, { AxiosInstance } from 'axios';
 import qs from 'qs';
-import Server, { ServerConfig, GetReposConfig, GetRepoConfig } from './server';
+import { oc } from 'ts-optchain.macro';
+import Server, {
+  CreateRepoConfig,
+  GetRepoConfig,
+  GetReposConfig,
+  ServerConfig
+} from './server';
 import { Repo } from '../types';
 
 export interface Detail {
@@ -62,13 +68,19 @@ export default class BitBucket implements Server {
 
   async getRepo(config?: GetRepoConfig): Promise<Repo | null> {
     config = {
-      slug: '',
       group: '',
+      slug: '',
       ...(config || {})
     };
-    const detail = (await this.instance.get(
-      `/projects/${encodeURIComponent(`${config.group}/${config.slug}`)}`
-    )).data as Detail;
+    const detail = oc(
+      await this.instance
+        .get(`/repositories/${config.group}/${config.slug}`)
+        .catch(err => {
+          if (err.response.status === 404) return null;
+          throw err;
+        })
+    ).data(null) as Detail;
+    if (!detail) return null;
     const [group, slug] = detail.full_name.split('/');
     return {
       detail,
@@ -80,9 +92,22 @@ export default class BitBucket implements Server {
     };
   }
 
-  async createRepo(name: string): Promise<Repo | null> {
-    const detail = (await this.instance.post('/projects', { name }))
-      .data as Detail;
+  async createRepo(config?: CreateRepoConfig): Promise<Repo | null> {
+    config = {
+      group: '',
+      slug: '',
+      project: 'PRO',
+      ...(config || {})
+    };
+    const detail = (await this.instance.post(
+      `/repositories/${config.group}/${config.slug}`,
+      {
+        scm: 'git',
+        project: {
+          key: config.project || 'PRO'
+        }
+      }
+    )).data as Detail;
     const [group, slug] = detail.full_name.split('/');
     return {
       detail,

@@ -9,10 +9,16 @@ export interface GetRepoConfig {
   slug: string;
 }
 
+export interface CreateRepoConfig {
+  group: string;
+  slug: string;
+  project: string;
+}
+
 export default interface Server {
   getRepos(config?: GetReposConfig): Promise<Repo[]>;
 
-  createRepo(name: string): Promise<Repo | null>;
+  createRepo(config?: CreateRepoConfig): Promise<Repo | null>;
 
   getRepo(config?: GetRepoConfig): Promise<Repo | null>;
 }

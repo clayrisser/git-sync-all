@@ -26,6 +26,7 @@ export interface SourceConfig extends ServerConfig {
 export interface TargetConfig extends ServerConfig {
   group: string;
   server: string;
+  project: string;
 }
 
 export interface Config extends EcosystemConfig {

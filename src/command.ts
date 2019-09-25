@@ -19,6 +19,7 @@ export default class Command extends EcosystemCommand {
     'target-client-id': flags.string(),
     'target-client-secret': flags.string(),
     'target-group': flags.string(),
+    'target-project': flags.string(),
     'target-server': flags.string(),
     'target-token': flags.string()
   };
@@ -65,7 +66,12 @@ export default class Command extends EcosystemCommand {
             flags['target-client-secret'] || config.target.clientSecret,
           group: flags['target-group'] || config.target.group,
           server: flags['target-server'] || config.target.server,
-          token: flags['target-token'] || config.target.token
+          token: flags['target-token'] || config.target.token,
+          project:
+            flags['target-project'] ||
+            (config.target.project.length
+              ? config.target.project
+              : config.source.server.toUpperCase().substr(0, 3))
         }
       }
     };
