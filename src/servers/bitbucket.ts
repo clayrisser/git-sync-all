@@ -34,8 +34,8 @@ export default class BitBucket implements Server {
       {
         responseType: 'json',
         auth: {
-          username: this.config.clientId,
-          password: this.config.clientSecret
+          username: this.config.username,
+          password: this.config.password
         }
       }
     )).data.access_token;

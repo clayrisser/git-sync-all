@@ -24,7 +24,7 @@ export default interface Server {
 }
 
 export interface ServerConfig {
-  clientId: string;
-  clientSecret: string;
+  username: string;
+  password: string;
   token: string;
 }

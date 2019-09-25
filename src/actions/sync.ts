@@ -9,16 +9,16 @@ export default async function sync(config: Config, logger: Logger) {
     `started ${config.action} with ${config.source.server}`
   );
   const sourceServer = createServer(config.source.server, {
-    clientId: config.source.clientId,
-    clientSecret: config.source.clientSecret,
+    username: config.source.username,
+    password: config.source.password,
     token: config.source.token
   });
   if (!sourceServer) {
     throw new Err(`server '${config.source.server}' not supported`, 400);
   }
   const targetServer = createServer(config.target.server, {
-    clientId: config.target.clientId,
-    clientSecret: config.target.clientSecret,
+    username: config.target.username,
+    password: config.target.password,
     token: config.target.token
   });
   if (!targetServer) {

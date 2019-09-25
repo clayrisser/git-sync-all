@@ -8,16 +8,16 @@ export default class Command extends EcosystemCommand {
 
   static flags = {
     'source-blacklist': flags.string(),
-    'source-client-id': flags.string(),
-    'source-client-secret': flags.string(),
+    'source-username': flags.string(),
+    'source-password': flags.string(),
     'source-groups': flags.string(),
     'source-owned': flags.boolean(),
     'source-server': flags.string(),
     'source-slug-regex': flags.string(),
     'source-token': flags.string(),
     'source-whitelist': flags.string(),
-    'target-client-id': flags.string(),
-    'target-client-secret': flags.string(),
+    'target-username': flags.string(),
+    'target-password': flags.string(),
     'target-group': flags.string(),
     'target-project': flags.string(),
     'target-server': flags.string(),
@@ -31,9 +31,8 @@ export default class Command extends EcosystemCommand {
       runtimeConfig: {
         source: {
           owned: flags['source-owned'] || config.source.owned,
-          clientId: flags['source-client-id'] || config.source.clientId,
-          clientSecret:
-            flags['source-client-secret'] || config.source.clientSecret,
+          username: flags['source-username'] || config.source.username,
+          password: flags['source-password'] || config.source.password,
           server: flags['source-server'] || config.source.server,
           token: flags['source-token'] || config.source.token,
           blacklist: new Set([
@@ -61,9 +60,8 @@ export default class Command extends EcosystemCommand {
           ])
         },
         target: {
-          clientId: flags['target-client-id'] || config.target.clientId,
-          clientSecret:
-            flags['target-client-secret'] || config.target.clientSecret,
+          username: flags['target-username'] || config.target.username,
+          password: flags['target-password'] || config.target.password,
           group: flags['target-group'] || config.target.group,
           server: flags['target-server'] || config.target.server,
           token: flags['target-token'] || config.target.token,
