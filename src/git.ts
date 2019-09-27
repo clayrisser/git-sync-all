@@ -34,44 +34,41 @@ export default class Git {
   async clone(): Promise<string> {
     let result = '';
     result += await spawn('git', ['clone', this.sourceRemote, this.directory]);
-    const cwd = process.cwd();
     process.chdir(this.directory);
-    result += await spawn('git', ['remote', 'rename', 'origin', 'source']);
-    result += await spawn('git', [
-      'remote',
-      'add',
-      'target',
-      this.targetRemote
-    ]);
-    process.chdir(cwd);
+    result += await spawn('git', ['remote', 'rename', 'origin', 'source'], {
+      cwd: this.directory
+    });
+    result += await spawn(
+      'git',
+      ['remote', 'add', 'target', this.targetRemote],
+      { cwd: this.directory }
+    );
     return result;
   }
 
   async fetch(): Promise<string> {
     let result = '';
-    const cwd = process.cwd();
     process.chdir(this.directory);
-    result += await spawn('git', ['fetch', 'source']);
-    result += await spawn('git', ['fetch', 'target']);
-    process.chdir(cwd);
+    result += await spawn('git', ['fetch', 'source'], { cwd: this.directory });
+    result += await spawn('git', ['fetch', 'target'], { cwd: this.directory });
     return result;
   }
 
   async merge(branch: string): Promise<string> {
     let result = '';
-    const cwd = process.cwd();
     process.chdir(this.directory);
-    result += await spawn('git', ['checkout', branch]);
-    result += await spawn('git', ['merge', `remotes/source/${branch}`]);
-    process.chdir(cwd);
+    result += await spawn('git', ['checkout', branch], { cwd: this.directory });
+    result += await spawn('git', ['merge', `remotes/source/${branch}`], {
+      cwd: this.directory
+    });
     return result;
   }
 
   async getBranches(): Promise<string[]> {
-    const cwd = process.cwd();
     process.chdir(this.directory);
-    const result = await spawn('git', ['--no-pager', 'branch', '-a']);
-    process.chdir(cwd);
+    const result = await spawn('git', ['--no-pager', 'branch', '-a'], {
+      cwd: this.directory
+    });
     return result
       .split('\n')
       .map((branch: string) => branch.substr(2))
@@ -83,15 +80,13 @@ export default class Git {
   }
 
   async push(branch = 'master', force = false): Promise<string> {
-    const cwd = process.cwd();
-    process.chdir(this.directory);
-    const result = await spawn('git', [
-      'push',
-      'target',
-      branch,
-      ...(force ? ['-f'] : [])
-    ]);
-    process.chdir(cwd);
+    let result = '';
+    result += await spawn('git', ['checkout', branch], { cwd: this.directory });
+    result += await spawn(
+      'git',
+      ['push', 'target', branch, ...(force ? ['-f'] : [])],
+      { cwd: this.directory }
+    );
     return result;
   }
 }

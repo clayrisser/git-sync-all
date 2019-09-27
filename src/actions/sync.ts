@@ -1,6 +1,5 @@
 import Err from 'err';
 import _ from 'lodash';
-import fs from 'fs-extra';
 import path from 'path';
 import { Logger } from '@ecosystem/core';
 import { mapSeries } from 'bluebird';
@@ -80,7 +79,31 @@ export default async function sync(config: Config, logger: Logger) {
   result += await clone(remotes, config, logger);
   result += await fetch(remotes, config, logger);
   result += await merge(remotes, config, logger);
+  result += await push(remotes, config, logger);
   spinner.succeed(`finished ${config.action} with ${config.source.server}`);
+  return result;
+}
+
+export async function push(
+  remotes: Git[],
+  _config: Config,
+  logger: Logger
+): Promise<string> {
+  let result = '';
+  const { spinner } = logger;
+  const message = `branches to targets \n  - ${remotes
+    .map(remote => `${remote.targetRemote}`)
+    .join('\n  - ')}`;
+  spinner.start(`pushing ${message}`);
+  await Promise.all(
+    remotes.map(async (remote: Git) => {
+      const branches = await remote.getBranches();
+      if (branches.length) {
+        await mapSeries(branches, async branch => remote.push(branch));
+      }
+    })
+  );
+  spinner.succeed(`pushing ${message}`);
   return result;
 }
 
@@ -91,28 +114,19 @@ export async function merge(
 ): Promise<string> {
   let result = '';
   const { spinner } = logger;
-  spinner.start(
-    `merging branches \n  - ${remotes
-      .map(remote => `${remote.sourceRemote} -> ${remote.targetRemote}`)
-      .join('\n  - ')}`
-  );
+  const message = `branches \n  - ${remotes
+    .map(remote => `${remote.sourceRemote} -> ${remote.targetRemote}`)
+    .join('\n  - ')}`;
+  spinner.start(`merging ${message}`);
   await Promise.all(
     remotes.map(async (remote: Git) => {
       const branches = await remote.getBranches();
-      if (!branches.length) {
-        return spinner.warn(`${remote.sourceRemote} has no branches`);
-      } else {
-        await mapSeries(branches, async branch => {
-          return remote.merge(branch);
-        });
-        return spinner.succeed(
-          `${remote.sourceRemote} branches merged \n  - ${branches.join(
-            '\n  - '
-          )}`
-        );
+      if (branches.length) {
+        await mapSeries(branches, async branch => remote.merge(branch));
       }
     })
   );
+  spinner.succeed(`merged ${message}`);
   return result;
 }
 
@@ -123,18 +137,14 @@ export async function fetch(
 ): Promise<string> {
   let result = '';
   const { spinner } = logger;
-  spinner.start(
-    `fetching \n  - ${_.flatten(
-      remotes.map(remote => [remote.sourceRemote, remote.targetRemote])
-    ).join('\n  - ')}`
-  );
+  const message = `\n  - ${_.flatten(
+    remotes.map(remote => [remote.sourceRemote, remote.targetRemote])
+  ).join('\n  - ')}`;
+  spinner.start(`fetching ${message}`);
   await Promise.all(
-    remotes.map(async (remote: Git) => {
-      result += await remote.fetch();
-      spinner.succeed(`fetched ${remote.sourceRemote}`);
-      return spinner.succeed(`fetched ${remote.targetRemote}`);
-    })
+    remotes.map(async (remote: Git) => (result += await remote.fetch()))
   );
+  spinner.succeed(`fetched ${message}`);
   return result;
 }
 
@@ -145,17 +155,13 @@ export async function clone(
 ): Promise<string> {
   let result = '';
   const { spinner } = logger;
-  spinner.start(
-    `cloning \n  - ${remotes.map(remote => remote.targetRemote).join('\n  - ')}`
-  );
+  const message = `\n  - ${remotes
+    .map(remote => remote.targetRemote)
+    .join('\n  - ')}`;
+  spinner.start(`cloning ${message}`);
   await Promise.all(
-    remotes.map(async (remote: Git) => {
-      if (await fs.pathExists(remote.directory)) {
-        return spinner.warn(`already cloned ${remote.sourceRemote}`);
-      }
-      result += await remote.clone();
-      return spinner.succeed(`cloned ${remote.sourceRemote}`);
-    })
+    remotes.map(async (remote: Git) => (result += await remote.clone()))
   );
+  spinner.succeed(`cloned ${message}`);
   return result;
 }
