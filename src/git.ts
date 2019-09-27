@@ -1,6 +1,7 @@
-import crossSpawn from 'cross-spawn';
 import Err from 'err';
+import crossSpawn from 'cross-spawn';
 import { SpawnOptions } from 'child_process';
+import { oc } from 'ts-optchain.macro';
 
 export async function spawn(
   command: string,
@@ -46,33 +47,51 @@ export default class Git {
     return result;
   }
 
-  async fetch() {
+  async fetch(): Promise<string> {
+    let result = '';
     const cwd = process.cwd();
     process.chdir(this.directory);
-    await spawn('git', ['fetch', 'source']);
-    await spawn('git', ['fetch', 'target']);
+    result += await spawn('git', ['fetch', 'source']);
+    result += await spawn('git', ['fetch', 'target']);
     process.chdir(cwd);
+    return result;
   }
 
-  async merge() {
+  async merge(branch: string): Promise<string> {
+    let result = '';
     const cwd = process.cwd();
     process.chdir(this.directory);
-    await spawn('git', ['merge', 'source']);
-    await spawn('git', ['merge', 'target']);
+    result += await spawn('git', ['checkout', branch]);
+    result += await spawn('git', ['merge', `remotes/source/${branch}`]);
     process.chdir(cwd);
+    return result;
   }
 
-  async getBranches() {
+  async getBranches(): Promise<string[]> {
     const cwd = process.cwd();
     process.chdir(this.directory);
-    await spawn('git', ['--no-pager', 'branch']);
+    const result = await spawn('git', ['--no-pager', 'branch', '-a']);
     process.chdir(cwd);
+    return result
+      .split('\n')
+      .map((branch: string) => branch.substr(2))
+      .filter(branch => /^remotes\/source\/[^\s]+$/.test(branch))
+      .map((branch: string) =>
+        oc(branch.match(/(?<=remotes\/source\/).+$/))[0]('')
+      )
+      .filter(branch => branch.length);
   }
 
-  async push(branch = 'master', force = false) {
+  async push(branch = 'master', force = false): Promise<string> {
     const cwd = process.cwd();
     process.chdir(this.directory);
-    await spawn('git', ['push', 'target', branch, ...(force ? ['-f'] : [])]);
+    const result = await spawn('git', [
+      'push',
+      'target',
+      branch,
+      ...(force ? ['-f'] : [])
+    ]);
     process.chdir(cwd);
+    return result;
   }
 }
