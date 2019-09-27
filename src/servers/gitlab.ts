@@ -82,14 +82,9 @@ export default class GitLab implements Server {
       slug: '',
       ...(config || {})
     };
-    const detail = (await this.instance
-      .post('/projects', {
-        name: config.slug
-      })
-      .catch(err => {
-        console.log(err);
-        throw err;
-      })).data as Detail;
+    const detail = (await this.instance.post('/projects', {
+      name: config.slug
+    })).data as Detail;
     const [group, slug] = detail.path_with_namespace.split('/');
     return {
       detail,

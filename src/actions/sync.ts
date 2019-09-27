@@ -1,10 +1,19 @@
 import Err from 'err';
+import fs from 'fs-extra';
+import path from 'path';
 import { Logger } from '@ecosystem/core';
 import { mapSeries } from 'bluebird';
 import createServer from '../servers';
+import Git from '../git';
 import { Config, Repo } from '../types';
 
+export interface RemotePair {
+  sourceRemote: string;
+  targetRemote: string;
+}
+
 export default async function sync(config: Config, logger: Logger) {
+  let result = '';
   const spinner = logger.spinner.start(
     `started ${config.action} with ${config.source.server}`
   );
@@ -38,24 +47,72 @@ export default async function sync(config: Config, logger: Logger) {
         (whitelist.has(repo.slug) || whitelist.has(repoPath)))
     );
   });
-  await mapSeries(sourceRepos, async (sourceRepo: Repo) => {
-    const { slug } = sourceRepo;
-    const group = config.target.group || sourceRepo.group;
-    if (!(await targetServer.getRepo({ slug, group }))) {
-      return targetServer.createRepo({
-        group,
-        project: config.target.project,
-        slug
-      });
+  const repos: { source: Repo; target: Repo }[] = await mapSeries(
+    sourceRepos,
+    async (source: Repo) => {
+      const { slug } = source;
+      const group = config.target.group || source.group;
+      if (!(await targetServer.getRepo({ slug, group }))) {
+        return {
+          source,
+          target: (await targetServer.createRepo({
+            group,
+            project: config.target.project,
+            slug
+          })) as Repo
+        };
+      }
+      return {
+        source,
+        target: (await targetServer.getRepo({
+          group,
+          slug
+        })) as Repo
+      };
     }
-    return sourceRepo;
-  });
-  let sourceRemotes = [];
+  );
+  let remotes: RemotePair[] = [];
   if (config.ssh) {
-    sourceRemotes = sourceRepos.map((r: Repo) => r.sshRemote);
+    remotes = repos.map(({ source, target }) => ({
+      sourceRemote: source.sshRemote,
+      targetRemote: target.sshRemote
+    }));
   } else {
-    sourceRemotes = sourceRepos.map((r: Repo) => r.httpRemote);
+    remotes = repos.map(({ source, target }) => ({
+      sourceRemote: source.httpRemote,
+      targetRemote: target.httpRemote
+    }));
   }
+  result += await clone(remotes, config, logger);
   spinner.succeed(`finished ${config.action} with ${config.source.server}`);
-  logger.info(sourceRemotes);
+  return result;
+}
+
+export async function clone(
+  remotes: RemotePair[],
+  config: Config,
+  logger: Logger
+): Promise<string> {
+  let result = '';
+  const { spinner } = logger;
+  spinner.start(
+    `cloning ${remotes.map(remote => remote.targetRemote).join('\n')}`
+  );
+  await Promise.all(
+    remotes.map(async ({ sourceRemote, targetRemote }) => {
+      const directory = path.resolve(
+        config.rootPath,
+        '.tmp/git-sync-all',
+        encodeURIComponent(sourceRemote)
+      );
+      if (await fs.pathExists(directory)) {
+        return spinner.warn(`already cloned ${sourceRemote}`);
+      }
+      const git = new Git(sourceRemote, targetRemote, directory);
+      result += await git.clone();
+      await new Promise(r => setTimeout(r, 3000));
+      return spinner.succeed(`cloned ${sourceRemote}`);
+    })
+  );
+  return result;
 }

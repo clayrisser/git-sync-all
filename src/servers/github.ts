@@ -85,15 +85,10 @@ export default class GitHub implements Server {
       slug: '',
       ...(config || {})
     };
-    const detail = (await this.instance
-      .post('/user/repos', {
-        name: config.slug,
-        private: true
-      })
-      .catch(err => {
-        console.log(err);
-        throw err;
-      })).data as Detail;
+    const detail = (await this.instance.post('/user/repos', {
+      name: config.slug,
+      private: true
+    })).data as Detail;
     const [group, slug] = detail.full_name.split('/');
     return {
       detail,
