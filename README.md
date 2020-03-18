@@ -6,13 +6,11 @@
 
 Please ★ this repo if you found it useful ★ ★ ★
 
-
 ## Features
 
-* BitBucket
-* GitHub
-* GitLab
-
+- BitBucket
+- GitHub
+- GitLab
 
 ## Installation
 
@@ -20,31 +18,25 @@ Please ★ this repo if you found it useful ★ ★ ★
 npm install -g git-sync-all
 ```
 
-
 ## Dependencies
 
-* [NodeJS](https://nodejs.org)
-
+- [NodeJS](https://nodejs.org)
 
 ## Usage
 
 [Contribute](https://github.com/codejamninja/git-sync-all/blob/master/CONTRIBUTING.md) usage docs
 
-
 ## Support
 
 Submit an [issue](https://github.com/codejamninja/git-sync-all/issues/new)
-
 
 ## Screenshots
 
 [Contribute](https://github.com/codejamninja/git-sync-all/blob/master/CONTRIBUTING.md) a screenshot
 
-
 ## Contributing
 
 Review the [guidelines for contributing](https://github.com/codejamninja/git-sync-all/blob/master/CONTRIBUTING.md)
-
 
 ## License
 
@@ -52,16 +44,13 @@ Review the [guidelines for contributing](https://github.com/codejamninja/git-syn
 
 [Jam Risser](https://codejam.ninja) © 2020
 
-
 ## Changelog
 
 Review the [changelog](https://github.com/codejamninja/git-sync-all/blob/master/CHANGELOG.md)
 
-
 ## Credits
 
-* [Jam Risser](https://codejam.ninja) - Author
-
+- [Jam Risser](https://codejam.ninja) - Author
 
 ## Support on Liberapay
 
