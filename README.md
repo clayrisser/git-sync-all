@@ -1,54 +1,67 @@
 # git-sync-all
 
-[![npm](https://img.shields.io/npm/v/git-sync-all.svg?style=flat-square)](https://www.npmjs.com/package/git-sync-all)
 [![GitHub stars](https://img.shields.io/github/stars/codejamninja/git-sync-all.svg?style=social&label=Stars)](https://github.com/codejamninja/git-sync-all)
 
 > keep all git repos in sync
 
+Please ★ this repo if you found it useful ★ ★ ★
+
+
 ## Features
 
-- BitBucket
-- GitHub
-- GitLab
+* BitBucket
+* GitHub
+* GitLab
+
 
 ## Installation
 
 ```sh
-# npm
 npm install -g git-sync-all
-# yarn
-yarn global add git-sync-all
 ```
+
+
+## Dependencies
+
+* [NodeJS](https://nodejs.org)
+
 
 ## Usage
 
-Submit an [issue](https://github.com/codejamninja/git-sync-all/issues/new)
+[Contribute](https://github.com/codejamninja/git-sync-all/blob/master/CONTRIBUTING.md) usage docs
 
-## System Requirements
-
-[Node.js](https://nodejs.org)
 
 ## Support
 
 Submit an [issue](https://github.com/codejamninja/git-sync-all/issues/new)
 
+
+## Screenshots
+
+[Contribute](https://github.com/codejamninja/git-sync-all/blob/master/CONTRIBUTING.md) a screenshot
+
+
 ## Contributing
 
 Review the [guidelines for contributing](https://github.com/codejamninja/git-sync-all/blob/master/CONTRIBUTING.md)
+
 
 ## License
 
 [MIT License](https://github.com/codejamninja/git-sync-all/blob/master/LICENSE)
 
-[Jam Risser](https://codejam.ninja) © 2019
+[Jam Risser](https://codejam.ninja) © 2020
+
 
 ## Changelog
 
 Review the [changelog](https://github.com/codejamninja/git-sync-all/blob/master/CHANGELOG.md)
 
+
 ## Credits
 
-- [Jam Risser](https://codejam.ninja) - Author
+* [Jam Risser](https://codejam.ninja) - Author
+
 
 ## Support on Liberapay
 

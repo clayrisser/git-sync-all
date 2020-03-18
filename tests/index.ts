@@ -1,5 +1,5 @@
 describe('git-sync-all', () => {
-  it('works', () => {
+  it('should work', async () => {
     expect(true).toBe(true);
   });
 });
