@@ -53,7 +53,9 @@
     "@oclif/command": "^1.5.19",
     "@oclif/config": "^1.14.0",
     "@oclif/errors": "^1.2.2",
-    "core-js": "^3.6.4"
+    "@oclif/plugin-help": "^2.2.3",
+    "core-js": "^3.6.4",
+    "globby": "^11.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
@@ -65,6 +67,7 @@
     "@babel/preset-env": "^7.8.7",
     "@babel/preset-typescript": "^7.8.3",
     "@types/jest": "^25.1.4",
+    "@types/node": "^13.9.1",
     "@typescript-eslint/eslint-plugin": "^2.24.0",
     "@typescript-eslint/parser": "^2.24.0",
     "cspell": "^4.0.55",
@@ -85,7 +88,7 @@
   ],
   "oclif": {
     "commands": "./lib/commands",
-    "bin": "tsdpm",
+    "bin": "git-sync-all",
     "plugins": [
       "@oclif/plugin-help"
     ],

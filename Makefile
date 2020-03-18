@@ -66,14 +66,14 @@ clean:
 build: lib
 lib: node_modules/.tmp/coverage/lcov.info $(shell git ls-files)
 	-@rm -rf lib 2>/dev/null || true
-	@babel src -d lib --extensions '.ts,.tsx' --source-maps inline
+	@babel src -d .tmp/lib/src --extensions '.ts,.tsx' --source-maps inline
 	@tsc -d --emitDeclarationOnly
 	@mv .tmp/lib/src lib
 	-@rm -rf .tmp/lib 2>/dev/null || true
 
 .PHONY: start
 start:
-	@babel-node --extensions '.ts,.tsx' src $(ARGS)
+	@babel-node --extensions '.ts,.tsx' src/bin sync $(ARGS)
 
 .PHONY: purge
 purge: clean
