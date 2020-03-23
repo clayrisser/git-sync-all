@@ -56,7 +56,7 @@ export default class BitBucket implements Server {
         headers: { Authorization: `Bearer ${await this.getToken()}` }
       })
     ).data.values as Detail[];
-    return details.map(detail => {
+    return details.map((detail) => {
       const [group, slug] = detail.full_name.split('/');
       return {
         detail,
@@ -79,7 +79,7 @@ export default class BitBucket implements Server {
       ((
         await this.instance
           .get(`/repositories/${config.group}/${config.slug}`)
-          .catch(err => {
+          .catch((err) => {
             if (err.response.status === 404) return null;
             throw err;
           })

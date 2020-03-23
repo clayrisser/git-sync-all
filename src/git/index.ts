@@ -1,4 +1,8 @@
 import execa from 'execa';
+import clone from './clone';
+import fetch from './fetch';
+import merge from './merge';
+import push from './push';
 
 export default class Git {
   constructor(
@@ -66,11 +70,11 @@ export default class Git {
     return result
       .split('\n')
       .map((branch: string) => branch.substr(2))
-      .filter(branch => /^remotes\/source\/[^\s]+$/.test(branch))
+      .filter((branch) => /^remotes\/source\/[^\s]+$/.test(branch))
       .map(
         (branch: string) => branch.match(/(?<=remotes\/source\/).+$/)?.[0] || ''
       )
-      .filter(branch => branch.length);
+      .filter((branch) => branch.length);
   }
 
   async push(branch = 'master', force = false): Promise<string> {
@@ -84,3 +88,5 @@ export default class Git {
     return result;
   }
 }
+
+export { clone, fetch, merge, push };

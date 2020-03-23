@@ -41,7 +41,7 @@ export default class GitHub implements Server {
         params: { owned: config.owned }
       })
     ).data as Detail[];
-    return details.map(detail => {
+    return details.map((detail) => {
       const [group, slug] = detail.full_name.split('/');
       return {
         detail,
@@ -63,7 +63,7 @@ export default class GitHub implements Server {
     const repoPath = `${config.group}/${config.slug}`;
     const detail =
       ((
-        await this.instance.get(`/repos/${repoPath}`).catch(err => {
+        await this.instance.get(`/repos/${repoPath}`).catch((err) => {
           if (err.response.status === 404) return null;
           throw err;
         })

@@ -1,5 +1,12 @@
 {
   "language": "en",
   "version": "0.1",
-  "words": []
+  "words": [
+    "execa",
+    "gitlab",
+    "gitsyncall",
+    "newregexp",
+    "oclif",
+    "repos"
+  ]
 }

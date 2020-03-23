@@ -37,7 +37,7 @@ export default class GitLab implements Server {
         params: { owned: config.owned }
       })
     ).data as Detail[];
-    return details.map(detail => {
+    return details.map((detail) => {
       const [group, slug] = detail.path_with_namespace.split('/');
       return {
         detail,
@@ -60,7 +60,7 @@ export default class GitLab implements Server {
       ((
         await this.instance
           .get(`/projects/${encodeURIComponent(config.slug)}`)
-          .catch(err => {
+          .catch((err) => {
             if (err.response.status === 404) return null;
             throw err;
           })
