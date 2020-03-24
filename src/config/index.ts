@@ -3,14 +3,14 @@ import defaultConfig from './default';
 import { SourceConfig, TargetConfig } from '../types';
 
 export interface Config {
-  action: string;
   source: SourceConfig;
   ssh: boolean;
   target: TargetConfig;
 }
 
 export function createConfigManager(
-  optionsConfig: Partial<Config> = {}
+  optionsConfig: Partial<Config> = {},
+  _rootPath?: string
 ): ConfManager<Config> {
   const confManager = new ConfManager<Config>(
     { name: 'gitsyncall' },
@@ -18,7 +18,6 @@ export function createConfigManager(
     defaultConfig
   );
   confManager.loadUserConfig = (): Partial<Config> => {
-    console.log('loading user config');
     return {};
   };
   return confManager;

@@ -2,6 +2,8 @@ import newRegExp from 'newregexp';
 import { Command, flags } from '@oclif/command';
 import { Flags } from '../types';
 import { createConfigManager } from '../config';
+import { createContext } from '../context';
+import { sync } from '../actions';
 
 export default class Sync extends Command {
   static description = 'sync all git repos';
@@ -32,8 +34,6 @@ export default class Sync extends Command {
     const { flags } = this.parse(Sync);
     const configManager = createConfigManager();
     let { config } = configManager;
-    console.log('config', config);
-
     config = configManager.mergeConfig({
       source: {
         owned: flags['source-owned'] || config.source.owned,
@@ -78,6 +78,6 @@ export default class Sync extends Command {
             : config.source.server.toUpperCase().substr(0, 3))
       }
     });
-    console.log('config', config);
+    await sync(config, createContext());
   }
 }

@@ -1,13 +1,13 @@
 import Git from './index';
-import { Logger, Config } from '../types';
+import { Context } from '../context';
+import { Config } from '../config';
 
 export default async function fetch(
   remotes: Git[],
   _config: Config,
-  logger: Logger
+  { spinner }: Context
 ): Promise<string> {
   let result = '';
-  const { spinner } = logger;
   const message = `\n  - ${remotes
     .map((remote) => [remote.sourceRemote, remote.targetRemote])
     .flat()

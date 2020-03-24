@@ -1,13 +1,13 @@
 import Git from './index';
-import { Logger, Config } from '../types';
+import { Context } from '../context';
+import { Config } from '../config';
 
 export default async function clone(
   remotes: Git[],
   _config: Config,
-  logger: Logger
+  { spinner }: Context
 ): Promise<string> {
   let result = '';
-  const { spinner } = logger;
   const message = `\n  - ${remotes
     .map((remote) => remote.targetRemote)
     .join('\n  - ')}`;

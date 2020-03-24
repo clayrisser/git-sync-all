@@ -1,14 +1,14 @@
 import { mapSeries } from 'bluebird';
 import Git from './index';
-import { Logger, Config } from '../types';
+import { Context } from '../context';
+import { Config } from '../config';
 
 export default async function merge(
   remotes: Git[],
   _config: Config,
-  logger: Logger
+  { spinner }: Context
 ): Promise<string> {
   const result = '';
-  const { spinner } = logger;
   const message = `branches \n  - ${remotes
     .map((remote) => `${remote.sourceRemote} -> ${remote.targetRemote}`)
     .join('\n  - ')}`;

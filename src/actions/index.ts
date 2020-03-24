@@ -1,4 +1,3 @@
-// import sync from './sync';
-// import { Actions } from '../types';
+import sync from './sync';
 
-// export default { sync } as Actions;
+export { sync };
