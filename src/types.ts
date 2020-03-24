@@ -14,6 +14,7 @@ export interface Repo {
 
 export interface SourceConfig extends ServerConfig {
   blacklist: Set<string>;
+  forks: boolean;
   groups: Set<string>;
   owned: boolean;
   server: string;

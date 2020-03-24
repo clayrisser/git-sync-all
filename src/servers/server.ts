@@ -1,6 +1,7 @@
 import { Repo } from '../types';
 
 export interface GetReposConfig {
+  forks: boolean;
   owned: boolean;
 }
 

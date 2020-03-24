@@ -10,24 +10,33 @@ export default async function sync(config: Config, context: Context) {
   const { rootPath, spinner } = context;
   let result = '';
   spinner.start(`started sync with ${config.source.server}`);
-  const sourceServer = createServer(config.source.server, {
-    username: config.source.username,
-    password: config.source.password,
-    token: config.source.token
-  });
+  const sourceServer = createServer(
+    config.source.server,
+    {
+      username: config.source.username,
+      password: config.source.password,
+      token: config.source.token
+    },
+    config
+  );
   if (!sourceServer) {
     throw new Error(`server '${config.source.server}' not supported`);
   }
-  const targetServer = createServer(config.target.server, {
-    username: config.target.username,
-    password: config.target.password,
-    token: config.target.token
-  });
+  const targetServer = createServer(
+    config.target.server,
+    {
+      username: config.target.username,
+      password: config.target.password,
+      token: config.target.token
+    },
+    config
+  );
   if (!targetServer) {
     throw new Error(`server '${config.target.server}' not supported`);
   }
   const sourceRepos = (
     await sourceServer.getRepos({
+      forks: config.source.forks,
       owned: config.source.owned
     })
   ).filter((repo: Repo) => {
@@ -78,6 +87,10 @@ export default async function sync(config: Config, context: Context) {
     );
     return new Git(sourceRemote, targetRemote, directory);
   });
+  if (!remotes.length) {
+    spinner.fail('no repos to sync');
+    return null;
+  }
   result += await clone(remotes, config, context);
   result += await fetch(remotes, config, context);
   result += await merge(remotes, config, context);

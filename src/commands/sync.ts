@@ -11,7 +11,9 @@ export default class Sync extends Command {
   static examples = ['$ git-sync-all sync'];
 
   static flags: Flags = {
+    'config-path': flags.string(),
     'source-blacklist': flags.string(),
+    'source-forks': flags.boolean(),
     'source-groups': flags.string(),
     'source-owned': flags.boolean(),
     'source-password': flags.string(),
@@ -25,22 +27,28 @@ export default class Sync extends Command {
     'target-project': flags.string(),
     'target-server': flags.string(),
     'target-token': flags.string(),
-    'target-username': flags.string()
+    'target-username': flags.string(),
+    config: flags.string(),
+    debug: flags.boolean()
   };
 
   static args = [];
 
   async run() {
     const { flags } = this.parse(Sync);
-    const configManager = createConfigManager();
+    const configManager = createConfigManager(
+      JSON.parse(flags.config || '{}'),
+      flags['config-path']
+    );
     let { config } = configManager;
     config = configManager.mergeConfig({
       source: {
+        forks: flags.forks || config.source.forks,
         owned: flags['source-owned'] || config.source.owned,
-        username: flags['source-username'] || config.source.username,
         password: flags['source-password'] || config.source.password,
         server: flags['source-server'] || config.source.server,
         token: flags['source-token'] || config.source.token,
+        username: flags['source-username'] || config.source.username,
         blacklist: new Set([
           ...config.source.blacklist,
           ...(flags['source-blacklist']
@@ -76,8 +84,12 @@ export default class Sync extends Command {
           (config.target.project.length
             ? config.target.project
             : config.source.server.toUpperCase().substr(0, 3))
-      }
+      },
+      debug: flags.debug
     });
-    await sync(config, createContext());
+    const context = createContext(config);
+    const { logger } = context;
+    logger.debug(config);
+    await sync(config, context);
   }
 }

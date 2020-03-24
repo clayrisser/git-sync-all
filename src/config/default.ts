@@ -2,6 +2,7 @@ import { SourceConfig, TargetConfig } from '../types';
 
 const source: SourceConfig = {
   blacklist: new Set(),
+  forks: false,
   groups: new Set(),
   owned: true,
   password: '',
@@ -21,7 +22,8 @@ const target: TargetConfig = {
 };
 
 export default {
-  ssh: true,
+  debug: false,
   source,
+  ssh: true,
   target
 };

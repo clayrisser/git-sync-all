@@ -3,6 +3,7 @@ import defaultConfig from './default';
 import { SourceConfig, TargetConfig } from '../types';
 
 export interface Config {
+  debug: boolean;
   source: SourceConfig;
   ssh: boolean;
   target: TargetConfig;
@@ -10,16 +11,14 @@ export interface Config {
 
 export function createConfigManager(
   optionsConfig: Partial<Config> = {},
+  projectConfigPath?: string,
   _rootPath?: string
 ): ConfManager<Config> {
   return new ConfManager<Config>(
     {
+      loadHomeConfig: true,
       name: 'gitsyncall',
-      loadProjectConfig: (): Partial<Config> => {
-        console.log('loading project config');
-        return {};
-      },
-      loadHomeConfig: (): Partial<Config> => ({})
+      projectConfigPath
     },
     optionsConfig,
     defaultConfig

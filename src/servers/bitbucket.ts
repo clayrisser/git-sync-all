@@ -1,12 +1,14 @@
 import axios, { AxiosInstance } from 'axios';
 import qs from 'qs';
+import { responseLogger, requestLogger, errorLogger } from 'axios-logger';
+import { Config } from '../config';
+import { Repo } from '../types';
 import Server, {
   CreateRepoConfig,
   GetRepoConfig,
   GetReposConfig,
   ServerConfig
 } from './server';
-import { Repo } from '../types';
 
 export interface Detail {
   name: string;
@@ -18,27 +20,32 @@ export default class BitBucket implements Server {
 
   private _token: string;
 
-  constructor(public config: ServerConfig) {
+  constructor(public serverConfig: ServerConfig, public config: Config) {
     this.instance = axios.create({
       baseURL: 'https://api.bitbucket.org/2.0',
       responseType: 'json'
     });
+    if (config.debug) {
+      this.instance.interceptors.request.use(requestLogger, errorLogger);
+      this.instance.interceptors.response.use(responseLogger, errorLogger);
+    }
   }
 
   async getToken(): Promise<string> {
     if (this._token) return this._token;
+    const instance = axios.create({
+      baseURL: 'https://bitbucket.org/site/oauth2/access_token',
+      responseType: 'json'
+    });
+    instance.interceptors.request.use(requestLogger, errorLogger);
+    instance.interceptors.response.use(responseLogger, errorLogger);
     this._token = (
-      await axios.post(
-        'https://bitbucket.org/site/oauth2/access_token',
-        qs.stringify({ grant_type: 'client_credentials' }),
-        {
-          responseType: 'json',
-          auth: {
-            username: this.config.username,
-            password: this.config.password
-          }
+      await instance.post(qs.stringify({ grant_type: 'client_credentials' }), {
+        auth: {
+          username: this.serverConfig.username,
+          password: this.serverConfig.password
         }
-      )
+      })
     ).data.access_token;
     return this._token;
   }
@@ -46,6 +53,7 @@ export default class BitBucket implements Server {
   async getRepos(config?: GetReposConfig): Promise<Repo[]> {
     config = {
       owned: true,
+      forks: false,
       ...(config || {})
     };
     const details = (
@@ -104,12 +112,19 @@ export default class BitBucket implements Server {
       ...(config || {})
     };
     const detail = (
-      await this.instance.post(`/repositories/${config.group}/${config.slug}`, {
-        scm: 'git',
-        project: {
-          key: config.project || 'PRO'
-        }
-      })
+      await this.instance
+        .post(`/repositories/${config.group}/${config.slug}`, {
+          scm: 'git',
+          project: {
+            key: config.project || 'PRO'
+          }
+        })
+        .catch((err) => {
+          if (err.response.status === 401) {
+            throw new Error('creating bitbucket repo from api is forbidden');
+          }
+          throw err;
+        })
     ).data as Detail;
     const [group, slug] = detail.full_name.split('/');
     return {

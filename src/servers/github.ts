@@ -1,11 +1,13 @@
 import axios, { AxiosInstance } from 'axios';
-import Server, {
-  ServerConfig,
-  GetReposConfig,
-  GetRepoConfig,
-  CreateRepoConfig
-} from './server';
+import { responseLogger, requestLogger, errorLogger } from 'axios-logger';
+import { Config } from '../config';
 import { Repo } from '../types';
+import Server, {
+  CreateRepoConfig,
+  GetRepoConfig,
+  GetReposConfig,
+  ServerConfig
+} from './server';
 
 export interface Detail {
   full_name: string;
@@ -17,28 +19,35 @@ export interface Detail {
 export default class GitHub implements Server {
   public instance: AxiosInstance;
 
-  constructor(public config: ServerConfig) {
+  constructor(public serverConfig: ServerConfig, public config: Config) {
     this.instance = axios.create({
       baseURL: 'https://api.github.com',
       responseType: 'json',
       auth: {
-        username: config.username,
-        password: config.password.length ? config.password : config.token
+        username: serverConfig.username,
+        password: serverConfig.password.length
+          ? serverConfig.password
+          : serverConfig.token
       },
       headers: {
         Accept: 'application/vnd.github.v3+json'
       }
     });
+    if (config.debug) {
+      this.instance.interceptors.request.use(requestLogger, errorLogger);
+      this.instance.interceptors.response.use(responseLogger, errorLogger);
+    }
   }
 
   async getRepos(config?: GetReposConfig): Promise<Repo[]> {
     config = {
       owned: true,
+      forks: false,
       ...(config || {})
     };
     const details = (
       await this.instance.get('/user/repos', {
-        params: { owned: config.owned }
+        params: { owned: config?.owned }
       })
     ).data as Detail[];
     return details.map((detail) => {
