@@ -12,13 +12,16 @@ export function createConfigManager(
   optionsConfig: Partial<Config> = {},
   _rootPath?: string
 ): ConfManager<Config> {
-  const confManager = new ConfManager<Config>(
-    { name: 'gitsyncall' },
+  return new ConfManager<Config>(
+    {
+      name: 'gitsyncall',
+      loadProjectConfig: (): Partial<Config> => {
+        console.log('loading project config');
+        return {};
+      },
+      loadHomeConfig: (): Partial<Config> => ({})
+    },
     optionsConfig,
     defaultConfig
   );
-  confManager.loadUserConfig = (): Partial<Config> => {
-    return {};
-  };
-  return confManager;
 }
