@@ -4,6 +4,8 @@
 
 > keep all git repos in sync
 
+![](assets/git-sync-all.png)
+
 Please ★ this repo if you found it useful ★ ★ ★
 
 ## Features
